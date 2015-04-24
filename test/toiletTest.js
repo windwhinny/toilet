@@ -18,7 +18,7 @@ describe('Toilet', function() {
         beforeEach(function(){
             toilet.fs = {
                 exists: function(cb) {cb(null,true)},
-                stat: function(cb) {
+                stat: function(file, cb) {
                     cb({
                         isFile:function(){return true}
                     });
@@ -56,18 +56,26 @@ describe('Toilet', function() {
         });
 
         it('should follow the replacement rules', function(done) {
-            var engine = function(req, file, callback) {
+            toilet.engines.scss = function() {};
+            toilet.getPath('./a.css', function(err, file){
                 file.should.match(/\.scss$/);
-                callback(null, {});
+                done(err);
+            });
+            
+        });
+
+        it('should select the right engine', function(done){
+            var file = '/a.scss';
+
+            toilet.engines = {
+                scss: function(req, f) {
+                    f.should.equal(file);
+                    done()
+                }
             };
 
-            toilet.engines.scss = engine;
-            toilet.parseFile({}, '/a.css', function(err, result){
-                should.not.exists(err);
-                result.should.not.equal(false);
-                done();
-            });
-        });
+            toilet.parseFile({}, file);
+        })
     });
 
     describe('render', function() {
