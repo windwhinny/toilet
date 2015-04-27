@@ -29,7 +29,7 @@ app.listen(80);
 /styles/index.css
 ```
 
-toilet 将会读取如下文件，并返回编译后的结果。toilet 将会自动处理 import 、require 依赖。
+toilet 将会读取如下文件，并返回编译后的结果。toilet 将会自动处理 import 、require 依赖, 并将所有的依赖和源文件合并在一起返回。
 
 ```
 src/views/styles/index.css
@@ -39,7 +39,7 @@ src/views/styles/index.css
 
 ### bashDir
 
-文件储存的目录
+文件储存的目录, 可以为 string 或者 [string] 。
 
 ### replacement
 
