@@ -12,12 +12,33 @@ describe('Toilet', function() {
         });
     });
 
+    describe('baseDir', function() {
+        it('should support multi pathes', function(done) {
+            var baseDir = ['/dirA','/dirB','/dirC'];
+
+            toilet.getPath.call({
+                baseDir: baseDir,
+                _getPath: Toilet.prototype._getPath,
+                isFile: function(file, cb) {
+                    if (file == '/dirC/testfile.js') {
+                        cb(null, true);
+                    } else {
+                        cb(new Error('test failed'));
+                    }
+                },
+                replaceFileExt: function(file){ return file}
+            },
+            '/testfile.js', 
+            done);
+        });
+    });
+
     describe('isFile', function() {
         var path = '/a/b/c';
 
         beforeEach(function(){
             toilet.fs = {
-                exists: function(cb) {cb(null,true)},
+                exists: function(file, cb) {cb(null,true)},
                 stat: function(file, cb) {
                     cb({
                         isFile:function(){return true}
@@ -36,13 +57,13 @@ describe('Toilet', function() {
             });
         });
 
-        it('should return error when file is dir', function(){
+        it('should return error when file is dir', function(done){
             toilet.fs.isFile = function(){return false};
 
             toilet.isFile(path, function(e){
                 should.exists(e);
                 e.message.should.equal('file does not exists');
-                cb()
+                done()
             });
         });
     });
@@ -55,13 +76,11 @@ describe('Toilet', function() {
             };
         });
 
-        it('should follow the replacement rules', function(done) {
+        it('should follow the replacement rules', function() {
             toilet.engines.scss = function() {};
-            toilet.getPath('./a.css', function(err, file){
-                file.should.match(/\.scss$/);
-                done(err);
-            });
-            
+            file = toilet.replaceFileExt('./a.css');
+
+            file.should.match(/\.scss$/);
         });
 
         it('should select the right engine', function(done){
