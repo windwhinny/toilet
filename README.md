@@ -7,7 +7,7 @@ express 中间件 ，用以动态编译 js/less/sass 文件，并返回给浏览
 Installation
 
 ```
-npm install @mtfe/toilet
+npm install toilet
 ```
 
 ## Useage
